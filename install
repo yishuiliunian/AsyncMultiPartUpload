@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
 go get github.com/garyburd/redigo/redis
+go get github.com/bitly/go-simplejson
+go get labix.org/v2/mgo
