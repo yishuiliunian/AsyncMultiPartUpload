@@ -1,10 +1,8 @@
 package authorization
 
 import (
-	"fmt"
-	"github.com/bitly/go-simplejson"
-	"github.com/garyburd/redigo/redis"
-	"time"
+	"dzdatabase"
+	"strings"
 	"utilities"
 )
 
@@ -13,125 +11,34 @@ const (
 )
 
 const (
-	REDISCommandExists string = "EXISTS"
-	REDISCommandGET    string = "GET"
-	REDISCommandSET    string = "SET"
-	REDISCommandEXPIRE string = "EXPIRE"
-)
-
-const (
-	DZTokenDefaultDeadlineDuration = 60 * 60
-)
-
-const (
 	_ObjectKeyIdentify string = "identify"
+	_DZSplitGUIDKey    string = "|"
 )
 
-type DZToken struct {
-	Identify string
-	UserGUID string
+func joinUserGUIDAndDeviceGUID(ug string, dg string) string {
+	s := []string{ug, dg}
+	return strings.Join(s, _DZSplitGUIDKey)
 }
 
-func NewToken() *DZToken {
-	return &DZToken{utilities.GUID(), ""}
-}
-
-func (d *DZToken) TOJSONObjectString() []byte {
-	json, err := simplejson.NewJson([]byte("{}"))
-	if err != nil {
-		return nil
+func splitGetUserGUIDAndDeviceGuid(key string) (string, string) {
+	s := strings.Split(key, _DZSplitGUIDKey)
+	if len(s) != 2 {
+		return "", ""
 	}
-	json.Set(_ObjectKeyIdentify, d.Identify)
-	str, err := json.MarshalJSON()
-
-	if err != nil {
-		return nil
-	}
-	return []byte(str)
+	return s[0], s[1]
 }
 
-func DZTokenFromJsonString(jsonStr []byte) *DZToken {
-	token := &DZToken{}
-	json, err := simplejson.NewJson(jsonStr)
-	if err != nil {
-		return nil
-	}
-	identify, err := json.Get(_ObjectKeyIdentify).String()
-	if err != nil {
-		return nil
-	}
-	token.Identify = identify
-	return token
+func ApplyAnVaildToken(userguid string, deviceGuid string) (string, error) {
+	token := utilities.GUID()
+	value := joinUserGUIDAndDeviceGUID(userguid, deviceGuid)
+	err := dzdatabase.AddExpireKeyValueToReids(token, value)
+	return token, err
 }
 
-func getTokenDataByIdentify(identify string, conn redis.Conn) *DZToken {
-
-	str, err := redis.Bytes(conn.Do(REDISCommandGET, identify))
-	fmt.Println(str)
-	fmt.Println(err)
-	if err != nil {
-		return nil
-	}
-	return DZTokenFromJsonString(str)
-}
-
-func addToken(token *DZToken, conn redis.Conn) error {
-	str := token.TOJSONObjectString()
-	a, err := conn.Do(REDISCommandSET, token.Identify, str)
-	fmt.Println("****************")
-	fmt.Println(a)
-	fmt.Println(err)
-	return err
-}
-
-func checkExistToken(identify string, conn redis.Conn) (bool, error) {
-	return redis.Bool(conn.Do(REDISCommandExists, identify))
+func UpdateTokenExpireTime(token string) error {
+	return dzdatabase.UpdateExpireByKey(token)
 }
 
 func CheckTokenIsVaild(token string) (bool, error) {
-	conn, err := redis.Dial("tcp", ":6379")
-	if err != nil {
-		return false, err
-	}
-	defer conn.Close()
-	exist, err := checkExistToken(token, conn)
-	if !exist {
-		return false, nil
-	}
-	_, err = conn.Do(REDISCommandGET, token)
-	if err != nil {
-		return false, nil
-	}
-	return true, nil
-}
-
-func VaildToken(token *DZToken) error {
-	conn, err := redis.Dial("tcp", ":6379")
-	defer conn.Close()
-	if err != nil {
-		return err
-	}
-	token.Deadline = token.Deadline.Add(DZTokenDefaultDeadlineDuration)
-	return addToken(token, conn)
-}
-func LengthenDeadlineForToken(token string) error {
-	conn, err := redis.Dial("tcp", ":6379")
-	defer conn.Close()
-	fmt.Println(token)
-	e, _ := checkExistToken(token, conn)
-	if !e {
-		return utilities.NewError(utilities.DZErrorCodeTokenInvaild, "token invaild not exist!")
-	}
-	if err != nil {
-		return err
-	}
-	t := getTokenDataByIdentify(token, conn)
-	t.Deadline = t.Deadline.Add(DZTokenDefaultDeadlineDuration)
-	return addToken(t, conn)
-}
-
-func ApplyAnVaildToken() *DZToken {
-	token := NewToken()
-	VaildToken(token)
-	return token
+	return dzdatabase.CheckExistKey(token)
 }

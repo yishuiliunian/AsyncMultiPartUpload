@@ -54,23 +54,23 @@ func getImageData(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func routeToMethod(json *simplejson.Json, method string) ([]byte, error) {
-	switch method {
+func routeToMethod(requstData *networks.DZRequstData) ([]byte, error) {
+	switch requstData.Method {
 	case restfulbase.DZRestMethodTimeUpdate:
 		{
-			return []byte("{ok}"), catchtime.HandleUpdateTime(json)
+			return []byte("{ok}"), catchtime.HandleUpdateTime(requstData.BodyJson)
 		}
 	case restfulbase.DZRestMethodUserRegister:
 		{
-			return users.HandleRegisterUser(json)
+			return users.HandleRegisterUser(requstData.BodyJson)
 		}
 	case restfulbase.DZRestMethodTimeLogin:
 		{
-			return users.HandleLoginUser(json)
+			return users.HandleLoginUser(requstData.BodyJson, requstData.DeviceKey)
 		}
 	case restfulbase.DZRestMethodTokenUpdate:
 		{
-			return authorization.HandleUpdateToken(json)
+			return authorization.HandleUpdateToken(requstData.BodyJson, requstData.DeviceKey)
 		}
 	default:
 		{
@@ -92,7 +92,7 @@ func handleJsonRequst(rw http.ResponseWriter, req *http.Request) {
 				rw.Write([]byte("code error error!"))
 			}
 		} else {
-			data, err := routeToMethod(reqData.BodyJson, reqData.Method)
+			data, err := routeToMethod(reqData)
 			if err != nil {
 				errjson := utilities.EncodeError(err)
 				str, err := errjson.MarshalJSON()

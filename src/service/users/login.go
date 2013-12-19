@@ -39,7 +39,7 @@ func HandleRegisterUser(json *simplejson.Json) ([]byte, error) {
 	return bs, nil
 }
 
-func HandleLoginUser(json *simplejson.Json) ([]byte, error) {
+func HandleLoginUser(json *simplejson.Json, devicekey string) ([]byte, error) {
 
 	fmt.Println("handle login")
 	duser, err := models.NewDZUserFromJson(json)
@@ -60,12 +60,15 @@ func HandleLoginUser(json *simplejson.Json) ([]byte, error) {
 	if !strings.EqualFold(duser.Password, user.Password) {
 		return nil, utilities.NewError(utilities.DZErrorCodeTokenUnSupoort, "password error")
 	}
-	token := authorization.ApplyAnVaildToken()
+	token, err := authorization.ApplyAnVaildToken(user.Guid, devicekey)
+	if err != nil {
+		return nil, err
+	}
 	rejson, err := simplejson.NewJson([]byte("{}"))
 	if err != nil {
 		return nil, utilities.NewError(utilities.DZErrorCodeTokenUnSupoort, "new json error")
 	}
-	rejson.Set(networks.DZProtocolKeyToken, token.Identify)
+	rejson.Set(networks.DZProtocolKeyToken, token)
 	rejson.Set("userGuid", user.Guid)
 	return rejson.MarshalJSON()
 }

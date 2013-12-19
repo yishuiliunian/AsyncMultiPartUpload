@@ -6,12 +6,12 @@ import (
 	"utilities"
 )
 
-func HandleUpdateToken(json *simplejson.Json) ([]byte, error) {
+func HandleUpdateToken(json *simplejson.Json, devicekey string) ([]byte, error) {
 	token, err := json.Get("token").String()
 	if err != nil {
 		return nil, utilities.NewError(utilities.DZErrorCodePaser, "parse token error")
 	}
-	err = authorization.LengthenDeadlineForToken(token)
+	err = authorization.UpdateTokenExpireTime(token)
 	if err != nil {
 		return nil, utilities.NewError(utilities.DZErrorCodePaser, "length token deadline error")
 	}

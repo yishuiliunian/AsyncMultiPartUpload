@@ -34,6 +34,9 @@ func DecodeHttpRequest(req *http.Request) (*DZRequstData, error) {
 	} else {
 		requstData.Token = token
 		isVaild, err = authorization.CheckTokenIsVaild(token)
+		if isVaild {
+			authorization.UpdateTokenExpireTime(token)
+		}
 	}
 	requstData.TokenVaild = isVaild
 	//
