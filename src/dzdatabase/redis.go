@@ -44,6 +44,15 @@ func AddExpireKeyValueToReids(key string, value string) error {
 	return nil
 }
 
+func RedisGetValueByKey(key string) (string, error) {
+	conn, err := redis.Dial(REDISHttpMethod, REDISPort)
+	defer conn.Close()
+	if err != nil {
+		return "", utilities.NewError(REDISErrorCodeDialConnect, "dial redis error")
+	}
+	return redis.String(conn.Do(REDISCommandGET, key))
+}
+
 func CheckExistKey(key string) (bool, error) {
 	conn, err := redis.Dial(REDISHttpMethod, REDISPort)
 	defer conn.Close()

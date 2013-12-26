@@ -6,10 +6,11 @@ import (
 
 type DZDevice struct {
 	DZObject
-	UserGUID   string
-	Name       string
-	Detail     string
-	OtherInfos string
+	UserGUID      string
+	Name          string
+	Detail        string
+	ActiveDevices string
+	OtherInfos    string
 }
 
 func (d *DZDevice) DecodeFromJSONOBject(json *simplejson.Json) error {

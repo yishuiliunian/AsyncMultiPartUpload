@@ -5,4 +5,5 @@ const (
 	DZRestMethodUserRegister = "user.register"
 	DZRestMethodTimeLogin    = "user.login"
 	DZRestMethodTokenUpdate  = "token.update"
+	DZRestMethodAppUpdate    = "app.update"
 )

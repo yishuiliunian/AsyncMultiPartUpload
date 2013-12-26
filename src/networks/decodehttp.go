@@ -1,7 +1,7 @@
 package networks
 
 import (
-	"authorization"
+	"service/authorization"
 	// "fmt"
 	"github.com/bitly/go-simplejson"
 	"io/ioutil"
@@ -12,10 +12,10 @@ import (
 type DZRequstData struct {
 	BodyJson   *simplejson.Json
 	Token      string
-	TokenVaild bool
 	DeviceKey  string
 	Method     string
 	ClientType string
+	AppKey     string
 }
 
 func DecodeHttpRequest(req *http.Request) (*DZRequstData, error) {
@@ -27,19 +27,9 @@ func DecodeHttpRequest(req *http.Request) (*DZRequstData, error) {
 	if err != nil {
 		return requstData, err
 	}
-	isVaild := false
-	token, err := json.Get(DZProtocolKeyToken).String()
-	if err != nil {
-		isVaild = false
-	} else {
-		requstData.Token = token
-		isVaild, err = authorization.CheckTokenIsVaild(token)
-		if isVaild {
-			authorization.UpdateTokenExpireTime(token)
-		}
-	}
-	requstData.TokenVaild = isVaild
+	requstData.Token, _ = json.Get(DZProtocolKeyToken).String()
 	//
+	requstData.AppKey, err = json.Get(DZProtocolKeyAppkey).String()
 	//
 	method, err := json.Get(DZProtocolKeyMethod).String()
 	if err != nil {
@@ -59,4 +49,20 @@ func DecodeHttpRequest(req *http.Request) (*DZRequstData, error) {
 	deviecekey, err := json.Get(DZProtocolKeyDeviceKey).String()
 	requstData.DeviceKey = deviecekey
 	return requstData, err
+}
+
+func CheckRequestDataAcessVaild(reqData *DZRequstData) (bool, error) {
+	token := reqData.Token
+	if token == "" {
+		return false, utilities.NewError(utilities.DZErrorCodePaser, "token is nil")
+	}
+	deviceKey := reqData.DeviceKey
+	if deviceKey == "" {
+		return false, utilities.NewError(utilities.DZErrorCodePaser, "device key is nil")
+	}
+	vaild, err := authorization.CheckTokenIsVaild(token, deviceKey)
+	if err != nil || !vaild {
+		return false, utilities.NewError(utilities.DZErrorCodeTokenInvaild, "token is invaild")
+	}
+	return true, nil
 }

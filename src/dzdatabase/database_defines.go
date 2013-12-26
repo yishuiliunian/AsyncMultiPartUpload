@@ -9,4 +9,9 @@ const (
 	DZDataBaseColletionDevices   = "devices"
 	DZDataBaseColletionVersions  = "versions"
 	DZDataBaseColletionTimeTypes = "timetypes"
+	DZDataBaseColletionApps      = "apps"
+)
+
+const (
+	DZDBErrorCodeCantFindObject = -5000
 )

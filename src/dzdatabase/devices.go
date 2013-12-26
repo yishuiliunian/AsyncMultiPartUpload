@@ -37,7 +37,8 @@ func UpdateDZDevice(device *models.DZDevice) error {
 				models.DZObjectKeyUserGuid:   dv.UserGUID,
 				models.DZObjectKeyOtherInfos: dv.OtherInfos,
 				models.DZObjectKeyDetail:     dv.Detail,
-				models.DZObjectKeyName:       dv.Name}})
+				models.DZObjectKeyName:       dv.Name,
+				"activedevices":              dv.ActiveDevices}})
 	} else {
 		fmt.Println("insert device %s", device.Guid)
 		return s.CollectionDiveces().Insert(device)

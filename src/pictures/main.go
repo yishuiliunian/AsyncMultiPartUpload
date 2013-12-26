@@ -11,6 +11,7 @@ import (
 	"networks"
 	"restfulbase"
 	"service"
+	"service/apps"
 	"service/authorization"
 	"service/users"
 	"utilities"
@@ -54,12 +55,29 @@ func getImageData(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func routeToMethod(requstData *networks.DZRequstData) ([]byte, error) {
+func routeToDataAccessMethod(requstData *networks.DZRequstData) ([]byte, error) {
+	vaild, err := authorization.CheckTokenIsVaild(requstData.Token, requstData.DeviceKey)
+	if err != nil {
+		return nil, err
+	}
+	if !vaild {
+		return nil, utilities.NewError(utilities.DZErrorCodeTokenInvaild, "token invaild")
+	}
 	switch requstData.Method {
 	case restfulbase.DZRestMethodTimeUpdate:
 		{
 			return []byte("{ok}"), catchtime.HandleUpdateTime(requstData.BodyJson)
 		}
+	default:
+		{
+			return nil, utilities.NewError(utilities.DZErrorCodeTokenUnSupoort, "not support")
+		}
+	}
+}
+
+func routeToMethod(requstData *networks.DZRequstData) ([]byte, error) {
+	switch requstData.Method {
+
 	case restfulbase.DZRestMethodUserRegister:
 		{
 			return users.HandleRegisterUser(requstData.BodyJson)
@@ -72,10 +90,12 @@ func routeToMethod(requstData *networks.DZRequstData) ([]byte, error) {
 		{
 			return authorization.HandleUpdateToken(requstData.BodyJson, requstData.DeviceKey)
 		}
-	default:
+	case restfulbase.DZRestMethodAppUpdate:
 		{
-			return nil, utilities.NewError(utilities.DZErrorCodeTokenUnSupoort, "not support")
+			return apps.HanldeRegisterApp(requstData)
 		}
+	default:
+		return routeToDataAccessMethod(requstData)
 	}
 }
 

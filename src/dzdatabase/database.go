@@ -42,6 +42,10 @@ func (d *DZDatabaseSession) CollectionTimeTypes() *mgo.Collection {
 	return d.Session.DB(DZDataBaseName).C(DZDataBaseColletionTimeTypes)
 }
 
+func (d *DZDatabaseSession) CollectionApps() *mgo.Collection {
+	return d.Session.DB(DZDataBaseName).C(DZDataBaseColletionApps)
+}
+
 func (d *DZDatabaseSessionPool) Init() {
 	d.usingSessions = list.New()
 	d.unUsingSessions = list.New()

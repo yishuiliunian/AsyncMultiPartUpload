@@ -12,4 +12,5 @@ const (
 	DZProtocolKeyCilentType = "client_type"
 	DZProtocolKeyToken      = "token"
 	DZProtocolKeyDeviceKey  = "devicekey"
+	DZProtocolKeyAppkey     = "app_key"
 )
