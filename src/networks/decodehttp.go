@@ -51,18 +51,18 @@ func DecodeHttpRequest(req *http.Request) (*DZRequstData, error) {
 	return requstData, err
 }
 
-func CheckRequestDataAcessVaild(reqData *DZRequstData) (bool, error) {
+func CheckRequestDataAcessVaild(reqData *DZRequstData) (bool, string, error) {
 	token := reqData.Token
 	if token == "" {
-		return false, utilities.NewError(utilities.DZErrorCodePaser, "token is nil")
+		return false, "", utilities.NewError(utilities.DZErrorCodePaser, "token is nil")
 	}
 	deviceKey := reqData.DeviceKey
 	if deviceKey == "" {
-		return false, utilities.NewError(utilities.DZErrorCodePaser, "device key is nil")
+		return false, "", utilities.NewError(utilities.DZErrorCodePaser, "device key is nil")
 	}
-	vaild, err := authorization.CheckTokenIsVaild(token, deviceKey)
+	vaild, userguid, err := authorization.CheckTokenIsVaild(token, deviceKey)
 	if err != nil || !vaild {
-		return false, utilities.NewError(utilities.DZErrorCodeTokenInvaild, "token is invaild")
+		return false, "", utilities.NewError(utilities.DZErrorCodeTokenInvaild, "token is invaild")
 	}
-	return true, nil
+	return true, userguid, nil
 }

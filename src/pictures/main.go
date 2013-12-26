@@ -13,7 +13,9 @@ import (
 	"service"
 	"service/apps"
 	"service/authorization"
+	"service/dztimes"
 	"service/users"
+	"service/versions"
 	"utilities"
 )
 
@@ -56,7 +58,7 @@ func getImageData(rw http.ResponseWriter, req *http.Request) {
 }
 
 func routeToDataAccessMethod(requstData *networks.DZRequstData) ([]byte, error) {
-	vaild, err := authorization.CheckTokenIsVaild(requstData.Token, requstData.DeviceKey)
+	vaild, userGuid, err := networks.CheckRequestDataAcessVaild(requstData)
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +69,14 @@ func routeToDataAccessMethod(requstData *networks.DZRequstData) ([]byte, error) 
 	case restfulbase.DZRestMethodTimeUpdate:
 		{
 			return []byte("{ok}"), catchtime.HandleUpdateTime(requstData.BodyJson)
+		}
+	case restfulbase.DZRestMethodTimeGet:
+		{
+			return dztimes.HandleGetTimesRequest(requstData.BodyJson, userGuid)
+		}
+	case restfulbase.DZRestMethodVersionGet:
+		{
+			return versions.HangleGetAllVersionsRequest(requstData.BodyJson, userGuid)
 		}
 	default:
 		{

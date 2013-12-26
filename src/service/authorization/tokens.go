@@ -44,21 +44,21 @@ func UpdateTokenExpireTime(token string) error {
 	return dzdatabase.UpdateExpireByKey(token)
 }
 
-func CheckTokenIsVaild(token string, deviceKey string) (bool, error) {
+func CheckTokenIsVaild(token string, deviceKey string) (bool, string, error) {
 
 	exist, err := dzdatabase.CheckExistKey(token)
 	if err != nil || !exist {
-		return false, utilities.NewError(utilities.DZErrorCodeTokenInvaild, "token invalid")
+		return false, "", utilities.NewError(utilities.DZErrorCodeTokenInvaild, "token invalid")
 	}
 	value, err := dzdatabase.RedisGetValueByKey(token)
 	if err != nil {
-		return false, utilities.NewError(utilities.DZErrorCodeTokenInvaild, "get token data is error")
+		return false, "", utilities.NewError(utilities.DZErrorCodeTokenInvaild, "get token data is error")
 	}
-	_, dg := splitGetUserGUIDAndDeviceGuid(value)
+	userGuid, dg := splitGetUserGUIDAndDeviceGuid(value)
 	if dg != deviceKey {
-		return false, utilities.NewError(utilities.DZErrorCodeTokenInvaild, "device is not auth")
+		return false, "", utilities.NewError(utilities.DZErrorCodeTokenInvaild, "device is not auth")
 	}
-	return true, nil
+	return true, userGuid, nil
 }
 
 func ChackAppKeyIsVaild(userGuid string, appkey string) (bool, error) {

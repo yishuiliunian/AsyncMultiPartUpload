@@ -29,6 +29,25 @@ func isExistVersion(keytype string, userguid string) (bool, error) {
 	return count > 0, err
 }
 
+func getVersionByKey(key string, userguid string) (int64, error) {
+	s := ShareDBSessionPool().OneSession()
+	defer ShareDBSessionPool().EndUseSession(s)
+	var v models.DZVersion
+	err := s.CollectionVersions().Find(bson.M{"userguid": userguid, "keytype": key}).One(&v)
+	if err != nil {
+		return 0, nil
+	}
+	return v.Version, nil
+}
+
+func GetTimeVersionWithUserGuid(userguid string) (int64, error) {
+	return getVersionByKey(DZDatabaseColletionTimes, userguid)
+}
+
+func GetTimeTypesVersionWithUserGuid(userguid string) (int64, error) {
+	return getVersionByKey(DZDataBaseColletionTimeTypes, userguid)
+}
+
 func IncreaseShareVersionWith(keytype string, userguid string) (int64, error) {
 	s := ShareDBSessionPool().OneSession()
 	defer ShareDBSessionPool().EndUseSession(s)

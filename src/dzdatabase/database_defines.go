@@ -15,3 +15,11 @@ const (
 const (
 	DZDBErrorCodeCantFindObject = -5000
 )
+
+const (
+	MongoMethodGET        = "$get"
+	MongoMethodSET        = "$set"
+	MongoMethodGreatThan  = "$gt"
+	MongoMethodLittleThan = "%lt"
+	MongoMethodOR         = "$or"
+)

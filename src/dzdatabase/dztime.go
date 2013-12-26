@@ -44,3 +44,12 @@ func UpdateDZTime(dt *models.DZTime) error {
 		return s.CollectionTimes().Insert(dt)
 	}
 }
+
+func GetTimesOfUserWithVersionSpace(userguid string, startVersion int64, endVersion int64) ([]models.DZTime, error) {
+	s := ShareDBSessionPool().OneSession()
+	defer ShareDBSessionPool().EndUseSession(s)
+	var times []models.DZTime
+	err := s.CollectionTimes().Find(bson.M{models.DZObjectKeyVersion: bson.M{MongoMethodGreatThan: startVersion,
+		MongoMethodLittleThan: endVersion}}).All(&times)
+	return times, err
+}
