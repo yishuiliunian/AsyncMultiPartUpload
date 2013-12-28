@@ -1,12 +1,12 @@
 package users
 
 import (
-	"authorization"
 	"dzdatabase"
 	"fmt"
 	"github.com/bitly/go-simplejson"
 	"models"
 	"networks"
+	"service/authorization"
 	"strings"
 	"utilities"
 )
