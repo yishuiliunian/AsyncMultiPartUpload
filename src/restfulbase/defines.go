@@ -8,4 +8,5 @@ const (
 	DZRestMethodTimeGet      = "time.get"
 	DZRestMethodAppUpdate    = "app.update"
 	DZRestMethodVersionGet   = "version.get_all"
+	DZRestMethodTypesUpdate  = "type.update"
 )

@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	DZObjectKeyGUID        string = "guid"
-	DZObjectKeyVersion     string = "version"
+	DZObjectKeyGUID        string = "Guid"
+	DZObjectKeyVersion     string = "Version"
 	DZObjectKeyMD5         string = "md5"
 	DZObjectBaseVersion    uint64 = 0
 	DZObjectKeyData        string = "data"

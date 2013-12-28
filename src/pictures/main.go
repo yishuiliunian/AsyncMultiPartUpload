@@ -1,7 +1,6 @@
 package main
 
 import (
-	"catchtime"
 	"fmt"
 	"github.com/bitly/go-simplejson"
 	"io/ioutil"
@@ -14,6 +13,7 @@ import (
 	"service/apps"
 	"service/authorization"
 	"service/dztimes"
+	"service/timetypes"
 	"service/users"
 	"service/versions"
 	"utilities"
@@ -68,7 +68,7 @@ func routeToDataAccessMethod(requstData *networks.DZRequstData) ([]byte, error) 
 	switch requstData.Method {
 	case restfulbase.DZRestMethodTimeUpdate:
 		{
-			return []byte("{ok}"), catchtime.HandleUpdateTime(requstData.BodyJson)
+			return dztimes.HandleUpdateTime(requstData.BodyJson, userGuid)
 		}
 	case restfulbase.DZRestMethodTimeGet:
 		{
@@ -77,6 +77,10 @@ func routeToDataAccessMethod(requstData *networks.DZRequstData) ([]byte, error) 
 	case restfulbase.DZRestMethodVersionGet:
 		{
 			return versions.HangleGetAllVersionsRequest(requstData.BodyJson, userGuid)
+		}
+	case restfulbase.DZRestMethodTypesUpdate:
+		{
+			return timetypes.HandleUpdateTimeTypes(requstData.BodyJson, userGuid)
 		}
 	default:
 		{

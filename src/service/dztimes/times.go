@@ -2,7 +2,9 @@ package dztimes
 
 import (
 	"dzdatabase"
+	"fmt"
 	"github.com/bitly/go-simplejson"
+	"models"
 	"utilities"
 )
 
@@ -30,4 +32,19 @@ func HandleGetTimesRequest(json *simplejson.Json, userGuid string) ([]byte, erro
 	}
 	rj.Set("times", times)
 	return rj.MarshalJSON()
+}
+
+func HandleUpdateTime(dt *simplejson.Json, userGuid string) ([]byte, error) {
+	dtdata, err := models.NewDZTimeFromJSON(dt)
+	if err != nil {
+		return nil, err
+	}
+	if dtdata == nil {
+		fmt.Println("nil")
+	}
+	err = dzdatabase.UpdateDZTime(dtdata)
+	if err != nil {
+		return nil, err
+	}
+	return utilities.DZServerSucceedResponseData(), nil
 }

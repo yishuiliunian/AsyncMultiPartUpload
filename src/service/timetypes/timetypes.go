@@ -4,16 +4,17 @@ import (
 	"dzdatabase"
 	"github.com/bitly/go-simplejson"
 	"models"
+	"utilities"
 )
 
-func HandleUpdateTimeTypes(json *simplejson.Json) ([]byte, error) {
+func HandleUpdateTimeTypes(json *simplejson.Json, userGuid string) ([]byte, error) {
 	timetype, err := models.NewDZTimeTypeFromJSON(json)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = dzdatabase.UpdateDZTimeType(timetype)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return utilities.DZServerSucceedResponseData(), nil
 }

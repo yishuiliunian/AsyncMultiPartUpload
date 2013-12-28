@@ -20,6 +20,6 @@ const (
 	MongoMethodGET        = "$get"
 	MongoMethodSET        = "$set"
 	MongoMethodGreatThan  = "$gt"
-	MongoMethodLittleThan = "%lt"
+	MongoMethodLittleThan = "$lt"
 	MongoMethodOR         = "$or"
 )
