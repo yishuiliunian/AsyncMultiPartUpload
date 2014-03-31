@@ -5,20 +5,16 @@ import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
 	"models"
+	"restfulbase"
 	"utilities"
 )
 
-const (
-	kGetTimeStartVersion = "start_version"
-	kGetTimeRequestCount = "request_cout"
-)
-
 func HandleGetTimesRequest(json *simplejson.Json, userGuid string) ([]byte, error) {
-	startV, err := json.Get(kGetTimeStartVersion).Int64()
+	startV, err := json.Get(restfulbase.KGetStartVersion).Int64()
 	if err != nil {
 		return nil, utilities.NewError(utilities.DZErrorCodePaser, "parser start version error")
 	}
-	count, err := json.Get(kGetTimeRequestCount).Int64()
+	count, err := json.Get(restfulbase.KGeRequestCount).Int64()
 	if err != nil {
 		return nil, utilities.NewError(utilities.DZErrorCodePaser, "parser requst count")
 	}
@@ -30,7 +26,7 @@ func HandleGetTimesRequest(json *simplejson.Json, userGuid string) ([]byte, erro
 	if err != nil {
 		return nil, utilities.NewError(utilities.DZErrorCodePaser, "parser json error")
 	}
-	rj.Set("times", times)
+	rj.Set("objects", times)
 	return rj.MarshalJSON()
 }
 

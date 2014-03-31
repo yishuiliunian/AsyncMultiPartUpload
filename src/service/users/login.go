@@ -21,7 +21,6 @@ func HandleRegisterUser(json *simplejson.Json) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(json)
 	device := json.Get("device")
 	if device != nil {
 		fmt.Println("*****")

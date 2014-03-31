@@ -2,15 +2,18 @@ package models
 
 import (
 	"github.com/bitly/go-simplejson"
+	"time"
 	"utilities"
 )
 
 const (
-	JSONKeyTypeGuid       = "guid"
-	JSONKeyTypeName       = "name"
-	JSONKeyTypeDetail     = "detail"
-	JSONKeyTypeOtherInfos = "other_infos"
-	JSONKeyTypeUserGuid   = "user_guid"
+	JSONKeyTypeGuid       = "Guid"
+	JSONKeyTypeName       = "Name"
+	JSONKeyTypeDetail     = "Detail"
+	JSONKeyTypeOtherInfos = "OtherInfos"
+	JSONKeyTypeUserGuid   = "UserGuid"
+	JSONKeyTypeIsFinished = "Finished"
+	JSONKeyTypeCreateDate = "CreateDate"
 )
 
 type DZTimeType struct {
@@ -19,6 +22,8 @@ type DZTimeType struct {
 	Name       string
 	Detail     string
 	OtherInfos string
+	CreateDate time.Time
+	Finished   bool
 	Version    int64
 }
 
@@ -43,6 +48,11 @@ func (d *DZTimeType) DECodeFromJSONObject(json *simplejson.Json) error {
 	d.OtherInfos, err = json.Get(JSONKeyTypeOtherInfos).String()
 	if err != nil {
 		return utilities.NewError(utilities.DZErrorCodePaser, "parse otherinfo error")
+	}
+	cdate, err := json.Get(JSONKeyTypeCreateDate).String()
+	d.CreateDate, err = utilities.ParseTimeString(cdate)
+	if err != nil {
+		return utilities.NewError(utilities.DZErrorCodePaser, "parse create date error")
 	}
 	return nil
 }

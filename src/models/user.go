@@ -1,9 +1,13 @@
 package models
 
 import (
-	"fmt"
 	"github.com/bitly/go-simplejson"
 	"utilities"
+)
+
+const (
+	DZUserVIPNone = "free"
+	DZUserVIP1    = "vip1"
 )
 
 type DZUser struct {
@@ -15,12 +19,12 @@ type DZUser struct {
 	NickName    string
 	Avatar      string
 	DetailInfos string
+	VIPType     string
 }
 
 func (d *DZUser) DecodeFromJSONOBject(json *simplejson.Json) error {
 	var err error
 	d.DZObject.DecodeFromJSONOBject(json)
-	fmt.Println(json)
 	d.Email, err = json.Get(DZObjectKeyEmail).String()
 	if err != nil {
 		return utilities.NewError(utilities.DZErrorCodePaser, "parse email error")

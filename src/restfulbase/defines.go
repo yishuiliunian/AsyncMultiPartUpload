@@ -9,4 +9,10 @@ const (
 	DZRestMethodAppUpdate    = "app.update"
 	DZRestMethodVersionGet   = "version.get_all"
 	DZRestMethodTypesUpdate  = "type.update"
+	DZRestMethodTypesGet     = "type.get_all"
+)
+
+const (
+	KGetStartVersion = "start_version"
+	KGeRequestCount  = "request_cout"
 )

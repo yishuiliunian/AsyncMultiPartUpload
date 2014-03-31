@@ -49,7 +49,6 @@ func getImageData(rw http.ResponseWriter, req *http.Request) {
 			json := utilities.EncodeError(dataError)
 			fmt.Println(json)
 			data, _ := json.Encode()
-			fmt.Println(data)
 			rw.Write(data)
 			return
 		}
@@ -81,6 +80,10 @@ func routeToDataAccessMethod(requstData *networks.DZRequstData) ([]byte, error) 
 	case restfulbase.DZRestMethodTypesUpdate:
 		{
 			return timetypes.HandleUpdateTimeTypes(requstData.BodyJson, userGuid)
+		}
+	case restfulbase.DZRestMethodTypesGet:
+		{
+			return timetypes.HandleGetTimeTypes(requstData.BodyJson, userGuid)
 		}
 	default:
 		{

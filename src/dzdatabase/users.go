@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"labix.org/v2/mgo/bson"
 	"models"
+	"time"
 	"utilities"
 )
 
@@ -39,4 +40,17 @@ func RegisterUser(user *models.DZUser) error {
 	c := session.CollectionUsers()
 	c.Insert(user)
 	return nil
+}
+
+func keyUserInfoDate(userGuid string, key string) string {
+	return fmt.Sprintf("%s--%s", userGuid, key)
+}
+
+func SetUserInfoDate(date time.Time, key string, userguid string) error {
+	s := keyUserInfoDate(userguid, key)
+	return RedisSetDateForKey(s, &date)
+}
+func GetUserInfoDate(key string, userGuid string) (*time.Time, error) {
+	s := keyUserInfoDate(userGuid, key)
+	return RedisGetDateForKey(s)
 }

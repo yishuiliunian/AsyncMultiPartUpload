@@ -9,7 +9,7 @@ import (
 const (
 	DBKeyTypeGuid       = "guid"
 	DBKeyTypeName       = "name"
-	DBKeyTypeUserGuid   = "userGuid"
+	DBKeyTypeUserGuid   = "userguid"
 	DBKeyTypeDetail     = "detail"
 	DBKeyTypeOtherInfos = "otherinfos"
 	DZAppKeyTypeVersion = "version"
@@ -38,7 +38,7 @@ func UpdateDZTimeType(dt *models.DZTimeType) error {
 	}
 	if dbType != nil {
 		fmt.Println("update")
-		err := s.CollectionTimes().Update(bson.M{"dzobject.guid": dbType.Guid},
+		err := s.CollectionTimeTypes().Update(bson.M{"dzobject.guid": dbType.Guid},
 			bson.M{"$set": bson.M{models.DZObjectKeyVersion: dt.Version,
 				DBKeyTypeDetail:     dt.Detail,
 				DBKeyTypeUserGuid:   dt.UserGuid,
@@ -47,6 +47,15 @@ func UpdateDZTimeType(dt *models.DZTimeType) error {
 		return err
 	} else {
 		fmt.Println("insert")
-		return s.CollectionTimes().Insert(dt)
+		return s.CollectionTimeTypes().Insert(dt)
 	}
+}
+
+func GetTimeTypesOfUserWithVersionSpace(userguid string, startVersion int64, endVersion int64) ([]models.DZTimeType, error) {
+	s := ShareDBSessionPool().OneSession()
+	defer ShareDBSessionPool().EndUseSession(s)
+	var times []models.DZTimeType
+	err := s.CollectionTimeTypes().Find(bson.M{models.DZObjectKeyVersion: bson.M{MongoMethodGreatThan: startVersion,
+		MongoMethodLittleThan: endVersion}, models.DZObjectKeyUserGuid: userguid}).Sort(models.DZObjectKeyVersion).All(&times)
+	return times, err
 }

@@ -2,6 +2,7 @@ package dzdatabase
 
 import (
 	"github.com/garyburd/redigo/redis"
+	"time"
 	"utilities"
 )
 
@@ -42,6 +43,34 @@ func AddExpireKeyValueToReids(key string, value string) error {
 		return utilities.NewError(REDISErrorCodeExpire, "redis get key error")
 	}
 	return nil
+}
+
+func RedisGetDateForKey(key string) (*time.Time, error) {
+	conn, err := redis.Dial(REDISHttpMethod, REDISPort)
+	defer conn.Close()
+	if err != nil {
+		return nil, utilities.NewError(REDISErrorCodeDialConnect, "dial redis error")
+	}
+	timeStr, err := redis.String(conn.Do(REDISCommandGET, key))
+	if err != nil {
+		return nil, utilities.NewError(REDISErrorCodeGET, "get time error")
+	}
+	date, err := utilities.ParseTimeString(timeStr)
+	if err != nil {
+		return nil, utilities.NewError(utilities.DZErrorCodePaser, "parse time error")
+	}
+	return &date, nil
+}
+
+func RedisSetDateForKey(key string, date *time.Time) error {
+	conn, err := redis.Dial(REDISHttpMethod, REDISPort)
+	defer conn.Close()
+	if err != nil {
+		return utilities.NewError(REDISErrorCodeDialConnect, "dial redis error")
+	}
+	str := utilities.EncodeTime(date)
+	_, err = conn.Do(REDISCommandSET, key, str)
+	return err
 }
 
 func RedisGetValueByKey(key string) (string, error) {

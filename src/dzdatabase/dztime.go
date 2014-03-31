@@ -1,7 +1,6 @@
 package dzdatabase
 
 import (
-	"fmt"
 	"labix.org/v2/mgo/bson"
 	"models"
 )
@@ -14,7 +13,6 @@ func DZTimeByGuid(guid string) (*models.DZTime, error) {
 	if err != nil {
 		return nil, nil
 	}
-	fmt.Println(dt)
 	return &dt, nil
 }
 func UpdateDZTime(dt *models.DZTime) error {
@@ -29,7 +27,6 @@ func UpdateDZTime(dt *models.DZTime) error {
 		return err
 	}
 	if dbtime != nil {
-		fmt.Println("update")
 		err := s.CollectionTimes().Update(bson.M{"dzobject.guid": dbtime.Guid},
 			bson.M{"$set": bson.M{models.JDK_TimeVersion: dt.Version,
 				models.JDK_TimeDateBegin:  dt.DateBegin,
@@ -40,7 +37,6 @@ func UpdateDZTime(dt *models.DZTime) error {
 				models.JDK_TimeDeviceGUID: dt.DeviceGUID}})
 		return err
 	} else {
-		fmt.Println("insert")
 		return s.CollectionTimes().Insert(dt)
 	}
 }
@@ -49,9 +45,7 @@ func GetTimesOfUserWithVersionSpace(userguid string, startVersion int64, endVers
 	s := ShareDBSessionPool().OneSession()
 	defer ShareDBSessionPool().EndUseSession(s)
 	var times []models.DZTime
-	fmt.Println("start is %lld end is %lld", startVersion, endVersion)
 	err := s.CollectionTimes().Find(bson.M{models.DZObjectKeyVersion: bson.M{MongoMethodGreatThan: startVersion,
-		MongoMethodLittleThan: endVersion}}).Sort(models.DZObjectKeyVersion).All(&times)
-	fmt.Println(times)
+		MongoMethodLittleThan: endVersion}, models.DZObjectKeyUserGuid: userguid}).Sort(models.DZObjectKeyVersion).All(&times)
 	return times, err
 }

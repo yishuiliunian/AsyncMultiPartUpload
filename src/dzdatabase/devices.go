@@ -1,7 +1,6 @@
 package dzdatabase
 
 import (
-	"fmt"
 	"labix.org/v2/mgo/bson"
 	"models"
 )
@@ -30,8 +29,6 @@ func UpdateDZDevice(device *models.DZDevice) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println("update device %s", device.Guid)
-
 		return s.CollectionDiveces().Update(bson.M{"dzobject.guid": device.Guid},
 			bson.M{"$set": bson.M{
 				models.DZObjectKeyUserGuid:   dv.UserGUID,
@@ -40,7 +37,6 @@ func UpdateDZDevice(device *models.DZDevice) error {
 				models.DZObjectKeyName:       dv.Name,
 				"activedevices":              dv.ActiveDevices}})
 	} else {
-		fmt.Println("insert device %s", device.Guid)
 		return s.CollectionDiveces().Insert(device)
 	}
 	return nil
