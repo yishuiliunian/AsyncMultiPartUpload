@@ -13,6 +13,7 @@ const (
 	DBKeyTypeDetail     = "detail"
 	DBKeyTypeOtherInfos = "otherinfos"
 	DZAppKeyTypeVersion = "version"
+	DBKeyTypeFinished	= "finished"
 )
 
 func DZTimeTypeByGuid(guid string) (*models.DZTimeType, error) {
@@ -36,14 +37,17 @@ func UpdateDZTimeType(dt *models.DZTimeType) error {
 	if err != nil {
 		return err
 	}
+	
 	if dbType != nil {
 		fmt.Println("update")
+		fmt.Println(dt)
 		err := s.CollectionTimeTypes().Update(bson.M{"dzobject.guid": dbType.Guid},
 			bson.M{"$set": bson.M{models.DZObjectKeyVersion: dt.Version,
 				DBKeyTypeDetail:     dt.Detail,
 				DBKeyTypeUserGuid:   dt.UserGuid,
 				DBKeyTypeName:       dt.Name,
-				DBKeyTypeOtherInfos: dt.OtherInfos}})
+				DBKeyTypeOtherInfos: dt.OtherInfos,
+				DBKeyTypeFinished : dt.Finished}})
 		return err
 	} else {
 		fmt.Println("insert")

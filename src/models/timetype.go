@@ -4,6 +4,7 @@ import (
 	"github.com/bitly/go-simplejson"
 	"time"
 	"utilities"
+	"fmt"
 )
 
 const (
@@ -29,6 +30,7 @@ type DZTimeType struct {
 
 func (d *DZTimeType) DECodeFromJSONObject(json *simplejson.Json) error {
 	var err error
+	fmt.Println(json)
 	err = d.DZObject.DecodeFromJSONOBject(json)
 	if err != nil {
 		return err
@@ -53,6 +55,10 @@ func (d *DZTimeType) DECodeFromJSONObject(json *simplejson.Json) error {
 	d.CreateDate, err = utilities.ParseTimeString(cdate)
 	if err != nil {
 		return utilities.NewError(utilities.DZErrorCodePaser, "parse create date error")
+	}
+	d.Finished, err = json.Get(JSONKeyTypeIsFinished).Bool()
+	if err != nil {
+		return utilities.NewError(utilities.DZErrorCodePaser, "parse finished error")
 	}
 	return nil
 }
