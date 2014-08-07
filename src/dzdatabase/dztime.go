@@ -1,6 +1,7 @@
 package dzdatabase
 
 import (
+	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"models"
 )
@@ -11,17 +12,15 @@ func DZTimeByGuid(guid string) (*models.DZTime, error) {
 	var dt models.DZTime
 	err := s.CollectionTimes().Find(bson.M{"dzobject.guid": guid}).One(&dt)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	return &dt, nil
 }
 func UpdateDZTime(dt *models.DZTime) error {
 	s := ShareDBSessionPool().OneSession()
 	defer ShareDBSessionPool().EndUseSession(s)
-	dbtime, err := DZTimeByGuid(dt.Guid)
-	if err != nil {
-		return err
-	}
+	dbtime, _ := DZTimeByGuid(dt.Guid)
+	var err error
 	dt.Version, err = IncreaseTimesVersion(dt.UserGUID)
 	if err != nil {
 		return err
@@ -40,6 +39,15 @@ func UpdateDZTime(dt *models.DZTime) error {
 		return s.CollectionTimes().Insert(dt)
 	}
 }
+func RemoveDZTime(guid string) error {
+		s := ShareDBSessionPool().OneSession()
+	defer ShareDBSessionPool().EndUseSession(s)
+	err := s.CollectionTimes().Remove(bson.M{"dzobject.guid": guid})
+	if err != nil && err != mgo.ErrNotFound {
+		return	err;
+	}
+	return nil
+}
 
 func GetTimesOfUserWithVersionSpace(userguid string, startVersion int64, endVersion int64) ([]models.DZTime, error) {
 	s := ShareDBSessionPool().OneSession()
@@ -49,3 +57,6 @@ func GetTimesOfUserWithVersionSpace(userguid string, startVersion int64, endVers
 		MongoMethodLittleThan: endVersion}, models.DZObjectKeyUserGuid: userguid}).Sort(models.DZObjectKeyVersion).All(&times)
 	return times, err
 }
+
+
+

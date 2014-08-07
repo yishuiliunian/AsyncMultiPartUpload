@@ -10,6 +10,8 @@ const (
 	DZRestMethodVersionGet   = "version.get_all"
 	DZRestMethodTypesUpdate  = "type.update"
 	DZRestMethodTypesGet     = "type.get_all"
+	DZRestMethodDeletedObjectUpdate = "deleted.update"
+	DZRestMethodDeletedObjectGet = "deleted.get"
 )
 
 const (

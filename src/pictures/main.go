@@ -16,6 +16,7 @@ import (
 	"service/timetypes"
 	"service/users"
 	"service/versions"
+	"service/deleted"
 	"utilities"
 )
 
@@ -84,6 +85,14 @@ func routeToDataAccessMethod(requstData *networks.DZRequstData) ([]byte, error) 
 	case restfulbase.DZRestMethodTypesGet:
 		{
 			return timetypes.HandleGetTimeTypes(requstData.BodyJson, userGuid)
+		}
+	case restfulbase.DZRestMethodDeletedObjectGet:
+		{
+			return deleted.HandleGetDeletedObjectsRequest(requstData.BodyJson, userGuid)
+		}
+	case restfulbase.DZRestMethodDeletedObjectUpdate:
+		{
+			return deleted.HandleUpdateDeletedObject(requstData.BodyJson, userGuid)
 		}
 	default:
 		{

@@ -22,6 +22,10 @@ func (d *DZDatabaseSession) CollectionPictures() *mgo.Collection {
 	return d.Session.DB(DZDataBaseName).C(DZDataBaseColletionPictures)
 }
 
+func (d *DZDatabaseSession) CollectionDeletedObjects() *mgo.Collection {
+	return d.Session.DB(DZDataBaseName).C(DZDataBaseColletionDeletedObjects)
+}
+
 func (d *DZDatabaseSession) CollectionUsers() *mgo.Collection {
 	return d.Session.DB(DZDataBaseName).C(DZDataBaseColletionUsers)
 }

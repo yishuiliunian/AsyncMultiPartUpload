@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"labix.org/v2/mgo/bson"
 	"models"
+	"labix.org/v2/mgo"
 )
 
 const (
@@ -26,6 +27,17 @@ func DZTimeTypeByGuid(guid string) (*models.DZTimeType, error) {
 	}
 	return &dt, nil
 }
+
+func RemoveDZTimeType(guid string) error {
+	s := ShareDBSessionPool().OneSession()
+	defer ShareDBSessionPool().EndUseSession(s)
+	err := s.CollectionTimeTypes().Remove(bson.M{"dzobject.guid": guid})
+	if err != nil && err != mgo.ErrNotFound{
+		return err
+	}
+	return nil
+}
+
 func UpdateDZTimeType(dt *models.DZTimeType) error {
 	s := ShareDBSessionPool().OneSession()
 	defer ShareDBSessionPool().EndUseSession(s)

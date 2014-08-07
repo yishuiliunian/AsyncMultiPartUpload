@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+func IncreaseDeleteObjectsVersion(userguid string) (int64, error) {
+	return IncreaseShareVersionWith(DZDataBaseColletionDeletedObjects, userguid)
+}
+
 func IncreaseTimesVersion(userguid string) (int64, error) {
 	return IncreaseShareVersionWith(DZDatabaseColletionTimes, userguid)
 }
@@ -48,6 +52,9 @@ func GetTimeTypesVersionWithUserGuid(userguid string) (int64, error) {
 	return getVersionByKey(DZDataBaseColletionTimeTypes, userguid)
 }
 
+func GetTimeDeletedVersionWithUserGuid(userguid string) (int64, error) {
+	return getVersionByKey(DZDataBaseColletionDeletedObjects, userguid)
+}
 func IncreaseShareVersionWith(keytype string, userguid string) (int64, error) {
 	s := ShareDBSessionPool().OneSession()
 	defer ShareDBSessionPool().EndUseSession(s)

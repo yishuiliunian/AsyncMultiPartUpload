@@ -10,6 +10,7 @@ const (
 	DZDataBaseColletionVersions  = "versions"
 	DZDataBaseColletionTimeTypes = "timetypes"
 	DZDataBaseColletionApps      = "apps"
+	DZDataBaseColletionDeletedObjects = "deletedobjects"
 )
 
 const (
